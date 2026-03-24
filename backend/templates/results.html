@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Analysis Results</title>
+<link rel="stylesheet" href="/static/css/results.css">
+
+</head>
+
+<body>
+
+<h1>Analysis Results</h1>
+
+<div class="container">
+
+<div class="section">
+<h2>Symbol: {{ symbols }}</h2>
+<p>Period: {{ start_date }} → {{ end_date }}</p>
+<button onclick="goBack()">← Back</button>
+</div>
+
+<div class="section">
+<div id="loading">
+<h3>Running analysis...</h3>
+<p>Please wait while all agents complete.</p>
+</div>
+</div>
+
+<div id="resultContent" style="display:none;">
+
+<!-- Company Profile -->
+
+<div class="section">
+<h3>🏢 Company Profile</h3>
+<div id="profile"></div>
+</div>
+
+<!-- Technical -->
+
+<div class="section">
+<h3>📊 Technical Analysis</h3>
+<div id="technical"></div>
+</div>
+
+<!-- News -->
+
+<div class="section">
+<h3>📰 News</h3>
+<div id="news"></div>
+</div>
+
+<!-- Trading -->
+
+<div class="section">
+<h3>📈 Trading Analysis</h3>
+<div id="trading"></div>
+</div>
+
+<!-- Portfolio -->
+
+<div class="section">
+<h3>💼 Portfolio</h3>
+<div id="portfolio"></div>
+</div>
+
+<!-- Logs -->
+<!-- 
+<div class="section">
+<h3>📜 Logs</h3>
+<pre id="logs"></pre>
+</div> -->
+
+<!-- Pagination moved to bottom -->
+
+<div class="section" id="pagination">
+<button onclick="prevPage()">⬅ Previous</button>
+<span id="pageInfo">Page 1 / 1</span>
+<button onclick="nextPage()">Next ➡</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let ws;
+
+let resultBuffer={
+technical:[],
+news:[],
+trading:[],
+profile:[],
+portfolio:[],
+logs:[]
+};
+
+let currentPage=0;
+let totalPages=0;
+
+window.onload=function(){
+
+ws=new WebSocket("ws://"+window.location.host+"/ws/run");
+
+ws.onopen=()=>{
+ws.send(JSON.stringify({
+symbols:"{{ symbols }}",
+start_date:"{{ start_date }}",
+end_date:"{{ end_date }}"
+}));
+};
+
+ws.onmessage=(event)=>{
+
+const msg=JSON.parse(event.data);
+
+switch(msg.type){
+
+case "technical_analysis":
+resultBuffer.technical.push(msg.data);
+break;
+
+case "news":
+resultBuffer.news.push(msg.data);
+break;
+
+case "trading_analysis":
+resultBuffer.trading.push(msg.data);
+break;
+
+case "company_profile":
+resultBuffer.profile.push(msg.data);
+break;
+
+case "portfolio":
+resultBuffer.portfolio.push(msg.data);
+break;
+
+case "log":
+resultBuffer.logs.push(msg.msg);
+break;
+
+case "done":
+renderAll();
+break;
+}
+
+};
+
+};
+
+function renderAll(){
+
+document.getElementById("loading").style.display="none";
+document.getElementById("resultContent").style.display="block";
+
+if(resultBuffer.profile.length>0){
+renderProfile(resultBuffer.profile[0]);
+}
+
+totalPages=resultBuffer.technical.length;
+
+renderPage(0);
+
+document.getElementById("logs").textContent=resultBuffer.logs.join("\n");
+
+}
+
+function renderPage(page){
+
+currentPage=page;
+
+document.getElementById("pageInfo").innerText=
+"Page "+(page+1)+" / "+totalPages;
+
+renderTechnical(resultBuffer.technical[page]);
+renderNews(resultBuffer.news[page]);
+renderTrading(resultBuffer.trading[page]);
+renderPortfolio(resultBuffer.portfolio[page]);
+
+}
+
+function renderProfile(profile){
+
+const html=`
+<div class="profile-card">
+
+<img src="${profile.logo}" width="60">
+
+<h2>${profile.name} (${profile.symbol})</h2>
+
+<p><b>Industry:</b> ${profile.industry}</p>
+<p><b>Exchange:</b> ${profile.exchange}</p>
+<p><b>Country:</b> ${profile.country}</p>
+<p><b>IPO:</b> ${profile.ipo}</p>
+
+<p><b>Market Cap:</b> $${Math.round(profile.market_cap)} M</p>
+<p><b>Employees:</b> ${Math.round(profile.employees)}</p>
+
+<p>
+<a href="${profile.weburl}" target="_blank">
+Visit Website
+</a>
+</p>
+
+</div>
+`;
+
+document.getElementById("profile").innerHTML=html;
+
+}
+
+function renderTechnical(data){
+
+const i=data.indicators.technical_indicators;
+
+const html=`
+
+<table class="indicator-table">
+
+<tr>
+<th>Indicator</th>
+<th>Value</th>
+</tr>
+
+<tr>
+<td>Current Price</td>
+<td>$${data.indicators.current_price}</td>
+</tr>
+
+<tr>
+<td>SMA</td>
+<td>${i.SMA[0]}</td>
+</tr>
+
+<tr>
+<td>EMA</td>
+<td>${i.EMA[0]}</td>
+</tr>
+
+<tr>
+<td>RSI</td>
+<td>${i.RSI[0]}</td>
+</tr>
+
+<tr>
+<td>ADX</td>
+<td>${i.ADX[0]}</td>
+</tr>
+
+<tr>
+<td>CCI</td>
+<td>${i.CCI[0]}</td>
+</tr>
+
+<tr>
+<td>MACD</td>
+<td>${i.MACD.macd[0]}</td>
+</tr>
+
+</table>
+`;
+
+document.getElementById("technical").innerHTML=html;
+
+}
+
+function renderNews(news){
+
+let html="";
+
+news.slice(0,5).forEach(n=>{
+
+html+=`
+<div class="news-card">
+
+<a href="${n.url}" target="_blank">
+${n.headline}
+</a>
+
+<p>${n.summary}</p>
+
+</div>
+`;
+
+});
+
+document.getElementById("news").innerHTML=html;
+
+}
+
+function renderTrading(data){
+
+const html=`
+
+<h4>Company Fundamentals</h4>
+<p>${data.company_fundamental_health}</p>
+
+<h4>Market Sentiment</h4>
+<p>${data.market_sentiment_external_factors}</p>
+
+<h4>Technical Analysis</h4>
+<p>${data.technical_price_analysis}</p>
+
+<h4>Risk Assessment</h4>
+<p>${data.risk_assessment}</p>
+
+`;
+
+document.getElementById("trading").innerHTML=html;
+
+}
+
+function renderPortfolio(data){
+
+const key=Object.keys(data)[0];
+const p=data[key];
+
+let signalClass="hold";
+
+if(p.trading_signal==="BUY") signalClass="buy";
+if(p.trading_signal==="SELL") signalClass="sell";
+
+const html=`
+
+<div class="portfolio-card">
+
+<p>Signal: <span class="${signalClass}">
+${p.trading_signal}
+</span></p>
+
+<p>Confidence: ${p.confidence_level}</p>
+
+<p>Position Size: ${p.position_size}</p>
+
+</div>
+`;
+
+document.getElementById("portfolio").innerHTML=html;
+
+}
+
+function nextPage(){
+if(currentPage<totalPages-1){
+renderPage(currentPage+1);
+}
+}
+
+function prevPage(){
+if(currentPage>0){
+renderPage(currentPage-1);
+}
+}
+
+function goBack(){
+window.location.href="/";
+}
+
+</script>
+
+</body>
+</html>

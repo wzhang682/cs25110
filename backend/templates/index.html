@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Investment Agent</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+
+    <!-- Flatpickr Date Picker CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+
+<body>
+
+<h1>Investment Agent</h1>
+<p class="subtitle">AI-Powered Financial Analysis Platform</p>
+
+<div class="container">
+
+    <!-- ================= Market Overview Section ================= -->
+    <div class="section">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>Nasdaq Market Overview</h2>
+            <!-- <button onclick="loadMarketData()">Refresh</button> -->
+        </div>
+
+        <div class="market-table-container">
+            <table id="market-table">
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Price</th>
+                        <th>Change</th>
+                        <th>% Change</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Market data will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- ================= Analysis Section ================= -->
+    <div class="section">
+
+        <h2>Start Your Analysis</h2>
+
+        <!-- Quick stock symbol suggestions -->
+        <div class="stock-suggestions">
+            <span onclick="fillSymbol('AAPL')">AAPL</span>
+            <span onclick="fillSymbol('MSFT')">MSFT</span>
+            <span onclick="fillSymbol('NVDA')">NVDA</span>
+            <span onclick="fillSymbol('TSLA')">TSLA</span>
+            <span onclick="fillSymbol('AMZN')">AMZN</span>
+        </div>
+
+        <!-- User input fields -->
+        <input id="symbols" placeholder="Enter Stock Symbol">
+
+        <input id="start_date" placeholder="Start Date">
+        <input id="end_date" placeholder="End Date">
+
+        <button onclick="goToResults()">Run Analysis</button>
+
+    </div>
+
+</div>
+
+<!-- Flatpickr Date Picker JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+
+/* ================= Date Picker Initialization ================= */
+
+flatpickr("#start_date", {
+    dateFormat: "Y-m-d",
+    locale: "en"
+});
+
+flatpickr("#end_date", {
+    dateFormat: "Y-m-d",
+    locale: "en"
+});
+
+
+/* ================= Utility Functions ================= */
+
+// Fill stock symbol input when clicking suggestions
+function fillSymbol(symbol) {
+    document.getElementById("symbols").value = symbol;
+}
+
+
+// Redirect user to results page
+function goToResults() {
+    const symbols = document.getElementById("symbols").value;
+    const start = document.getElementById("start_date").value;
+    const end = document.getElementById("end_date").value;
+
+    if (!symbols || !start || !end) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    window.location.href =
+        `/results?symbols=${symbols}&start_date=${start}&end_date=${end}`;
+}
+
+
+/* ================= Market Data Loader ================= */
+
+function loadMarketData() {
+    fetch("/api/market")
+        .then(res => res.json())
+        .then(data => {
+
+            const tbody = document.querySelector("#market-table tbody");
+            tbody.innerHTML = "";
+
+            data.forEach(stock => {
+
+                // Set price change color (green for positive, red for negative)
+                const changeColor =
+                    stock.regularMarketChange >= 0 ? "green" : "red";
+
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${stock.symbol}</td>
+                    <td>$${stock.regularMarketPrice.toFixed(2)}</td>
+                    <td style="color:${changeColor}">
+                        ${stock.regularMarketChange.toFixed(2)}
+                    </td>
+                    <td style="color:${changeColor}">
+                        ${stock.regularMarketChangePercent.toFixed(2)}%
+                    </td>
+                `;
+
+                // Click row to auto-fill stock symbol
+                row.onclick = function() {
+                    fillSymbol(stock.symbol);
+                };
+
+                tbody.appendChild(row);
+            });
+
+        })
+        .catch(err => console.error("Market load error:", err));
+}
+
+// Load market data on page startup
+loadMarketData();
+
+</script>
+
+</body>
+</html>

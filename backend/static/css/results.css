@@ -1,0 +1,200 @@
+body{
+    background:#faf9f7;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+/* section */
+.section{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* title */
+h3{
+    margin-top:40px;
+    color:#555;
+    font-weight:600;
+}
+
+/* company profile */
+
+.profile-card img{
+    float:right;
+}
+
+/* table */
+
+.indicator-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.indicator-table th{
+    background:#eae7e3;
+}
+
+.indicator-table th,
+.indicator-table td{
+    border:1px solid #eee;
+    padding:10px;
+    text-align:left;
+}
+
+/* news */
+
+.news-card{
+    padding:12px;
+    border-bottom:1px solid #eee;
+}
+
+.news-card a{
+    font-weight:bold;
+    text-decoration:none;
+    color:#333;
+}
+
+.news-card a:hover{
+    color:#000;
+}
+
+/* portfolio */
+
+.portfolio-card{
+    padding:15px;
+    background:#f5f3f0;
+    border-radius:8px;
+}
+
+/* signal color */
+
+.buy{color:green;font-weight:bold;}
+.sell{color:red;font-weight:bold;}
+.hold{color:orange;font-weight:bold;}
+
+/* pagination */
+
+#pagination{
+    text-align:center;
+    margin-top:20px;
+}
+
+#pagination button{
+    padding:8px 16px;
+    border:none;
+    border-radius:20px;
+    background:#eae7e3;
+    cursor:pointer;
+    margin:5px;
+    transition:0.2s;
+}
+
+#pagination button:hover{
+    background:#d6ccc2;
+}
+
+/* button */
+
+button{
+    padding:8px 14px;
+    border:none;
+    border-radius:20px;
+    background:#eae7e3;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+button:hover{
+    background:#d6ccc2;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Roboto, sans-serif;
+    background-color: #f7f5f2;   
+    color: #333;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+}
+
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+
+tr:not(:last-child) {
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background-color: #fafafa;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 60px;
+    color: #777;
+    font-size: 16px;
+}
+
+h1 {
+    text-align: center;
+    padding: 50px 20px 10px 20px;
+    margin: 0;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+
+.container {
+    width: 88%;
+    margin: 40px auto;
+}
+
+button {
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #d6ccc2;   
+    color: #333;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background-color: #cbbfb3;
+}
+
+pre {
+    border-radius: 12px;
+    padding: 18px;
+    height: 220px;
+    overflow: auto;
+    background-color: #ffffff;
+    border: 1px solid #e8e6e3;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+    font-size: 13px;
+    line-height: 1.5;
+}

@@ -1,30 +1,44 @@
-# 🤖 Agent - AI 金融分析平台 (AI Financial Analysis Platform)
-
-这是一个基于 AI 驱动的自动化金融分析系统，专为多标的、跨日期的市场数据深度挖掘而设计。它集成了先进的 AI 工作流编排，能够智能识别非交易日，并生成包含技术面与情绪面的结构化分析报告。
+# Agent - AI Financial Analysis Platform
 
 ---
 
-## 🧠 核心功能 (Features)
+# Installation & Setup
 
-* 📅 **多日自动化处理**：支持自定义日期范围，系统自动生成交易日序列并**自动跳过周末**。
-* 📈 **多维度技术指标**：内置 SMA、RSI、MACD 等核心技术指标分析。
-* 🤖 **AI 工作流编排**：基于 **LangChain** 与 **LangGraph** 实现多 Agent 协同作业逻辑。
-* 📰 **情绪分析**：通过 Finnhub 等 API 实时抓取新闻，并利用 LLM 进行金融级情感评估。
-* 💾 **结构化数据导出**：分析结果（包含信号、置信度等）自动持久化为 CSV 文件。
-* ⚡ **异步高效执行**：采用 `asyncio` 并发处理 API 调用，大幅提升处理效率。
-* 🔁 **任务状态追踪**：提供完整的成功/失败任务计数及运行总结。
+## 1. Clone the Repository
 
----
+```bash
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+```
 
-## 🏗️ 项目结构 (Project Structure)
+## 2. Environment Setup (Python 3.10+)
 
-```text
-.
-├── main.py              # 程序启动入口
-├── requirements.txt     # 项目依赖清单
-├── .env                 # 环境变量 (API Keys)
-├── src/                 # 核心源代码
-│   ├── workflows/       # LangGraph 工作流定义
-│   └── tools/           # 金融数据与分析工具集
-└── output/              # 结果输出目录
-    └── csv/             # 存放生成的每日分析报告 (CSV 格式)
+It is recommended to use a virtual environment:
+
+Mac/Linux
+```bash
+python -m venv venv
+source venv/bin/activate
+```
+Windows
+```bash
+python -m venv venv
+.\venv\Scripts\activate
+```
+## 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+## 4. Configure Environment Variables
+
+Add your API keys in the root directory .env file:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key
+FINNHUB_API_KEY=your_finnhub_api_key
+```
+## 5. Start the program
+```bash
+uvicorn backend.app:app --reload --host 0.0.0.0 --port 8000 
+```
